@@ -123,7 +123,7 @@ Whether it’s bug fixes, new agents, or better animal detection — feel free t
 
 ## 📬 Contact
 
-If you'd like to collaborate, connect, or ask questions, feel free to [connect on LinkedIn](https://linkedin.com/in/your-profile)!
+If you'd like to collaborate, connect, or ask questions, feel free to [connect on LinkedIn](https://www.linkedin.com/in/sehar-nisar-078b92260/)!
 
 ## 📄 License
 
