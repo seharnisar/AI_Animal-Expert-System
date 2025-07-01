@@ -1,3 +1,7 @@
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 import streamlit as st
 import os
 import cv2
@@ -14,9 +18,7 @@ from crewai import Agent, Task, Crew, LLM
 import io
 import logging
 from datetime import datetime
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 
 
 # Configure logging
