@@ -6,3 +6,4 @@ opencv-python>=4.8.0
 numpy>=1.24.0
 requests>=2.31.0
 crewai>=0.28.0
+pysqlite3-binary
