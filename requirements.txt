@@ -5,5 +5,8 @@ pillow>=9.5.0
 opencv-python>=4.8.0
 numpy>=1.24.0
 requests>=2.31.0
-crewai>=0.28.0
-pysqlite3-binary
+crewai==0.28.8  # Pinned version
+pysqlite3-binary==0.5.2  # Pinned version
+chromadb==0.4.24  # Required by crewai
+langchain==0.1.13  # Required by crewai
+sentence-transformers==2.2.2  # For embeddings
