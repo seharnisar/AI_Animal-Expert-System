@@ -1,15 +1,8 @@
-streamlit==1.46.1
-opencv-python-headless==4.9.0.80
-numpy==1.26.4
-requests==2.31.0
-
-# CrewAI with alternative dependencies
-crewai==0.28.8
-tiktoken==0.6.0  # Explicit version to avoid Rust compilation
-chromadb==0.4.24
-langchain==0.1.13
-sentence-transformers==2.2.2
-
-# Avoid problematic packages in Python 3.13
-pillow==10.3.0; python_version < '3.13'
-pysqlite3-binary==0.5.2; python_version < '3.13'
+streamlit>=1.28.0
+torch>=2.0.0
+torchvision>=0.15.0
+pillow>=9.5.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+requests>=2.31.0
+crewai>=0.28.0
