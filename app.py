@@ -14,9 +14,9 @@ from crewai import Agent, Task, Crew, LLM
 import io
 import logging
 from datetime import datetime
+__import__('pysqlite3')
 import sys
-import pysqlite3
-sys.modules["sqlite3"] = pysqlite3
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 
 # Configure logging
