@@ -188,7 +188,7 @@ GROQ_MODEL = 'llama-3.3-70b-versatile'
 
 # LLM Analysis Functions
 def create_specialized_agents():
-    """Create all specialized agents for different analysis types using Groq API"""
+    """Create all specialized agents for different analysis types using Groq API, but make the pet agent an AI Pet Expert."""
     try:
         groq_llm = LLM(
             model=GROQ_MODEL,
@@ -249,10 +249,9 @@ def create_specialized_agents():
             max_iter=2
         ),
         'pet': Agent(
-            role="Pet Care Specialist",
-            goal="Evaluate pet suitability and provide comprehensive care guidance",
-            backstory="""Professional pet care specialist with extensive experience in animal husbandry, \
-            pet behavior management, and matching animals with appropriate care environments.""",
+            role="AI Pet Expert",
+            goal="Provide comprehensive guidance on pet care, training, health, suitability, and responsible ownership.",
+            backstory="""AI Pet Expert with deep knowledge of pet breeds, care, training, health, and responsible ownership. Specializes in helping pet owners and those considering a pet make the best decisions for animal and human well-being.""",
             llm=groq_llm,
             verbose=False,
             allow_delegation=False,
@@ -420,7 +419,6 @@ class ImageAnalyzer:
         try:
             self.model = resnet50(weights=ResNet50_Weights.IMAGENET1K_V2)
             self.model.eval()
-            
             self.transform = transforms.Compose([
                 transforms.Resize(256),
                 transforms.CenterCrop(224),
@@ -428,11 +426,57 @@ class ImageAnalyzer:
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], 
                                    std=[0.229, 0.224, 0.225])
             ])
-            
-            self.animal_classes = self._get_animal_classes()
+            # Pet animal classes (ImageNet class indices)
+            self.animal_classes = {
+                # Dogs (many breeds)
+                151: "chihuahua", 152: "japanese_spaniel", 153: "maltese_dog", 154: "pekinese",
+                155: "shih_tzu", 156: "blenheim_spaniel", 157: "papillon", 158: "toy_terrier",
+                159: "rhodesian_ridgeback", 160: "afghan_hound", 161: "basset", 162: "beagle",
+                163: "bloodhound", 164: "bluetick", 165: "black-and-tan_coonhound", 166: "walker_hound",
+                167: "english_foxhound", 168: "redbone", 169: "borzoi", 170: "irish_wolfhound",
+                171: "italian_greyhound", 172: "whippet", 173: "ibizan_hound", 174: "norwegian_elkhound",
+                175: "otterhound", 176: "saluki", 177: "scottish_deerhound", 178: "weimaraner",
+                207: "golden_retriever", 208: "labrador_retriever", 209: "chesapeake_bay_retriever",
+                210: "german_short-haired_pointer", 211: "vizsla", 212: "english_setter", 213: "irish_setter",
+                214: "gordon_setter", 215: "brittany_spaniel", 216: "clumber", 217: "english_springer",
+                218: "welsh_springer_spaniel", 219: "cocker_spaniel", 220: "sussex_spaniel", 221: "irish_water_spaniel",
+                222: "kuvasz", 223: "schipperke", 224: "groenendael", 225: "malinois", 226: "briard",
+                227: "kelpie", 228: "komondor", 229: "old_english_sheepdog", 230: "shetland_sheepdog",
+                231: "collie", 232: "border_collie", 233: "bouvier_des_flandres", 234: "rottweiler",
+                235: "german_shepherd", 236: "doberman", 237: "miniature_pinscher", 238: "greater_swiss_mountain_dog",
+                239: "bernese_mountain_dog", 240: "appenzeller", 241: "entlebucher", 242: "boxer",
+                243: "bull_mastiff", 244: "tibetan_mastiff", 245: "french_bulldog", 246: "great_dane",
+                247: "saint_bernard", 248: "eskimo_dog", 249: "malamute", 250: "siberian_husky",
+                # Cats
+                281: "tabby_cat", 282: "tiger_cat", 283: "persian_cat", 284: "siamese_cat", 285: "egyptian_cat",
+                # Rabbits, guinea pigs, hamsters, gerbils, ferrets, chinchillas, rats, mice (not all are in ImageNet)
+                80: "hamster", 77: "guinea_pig", 78: "chinchilla", 79: "rabbit", 81: "mouse", 82: "rat",
+                # Birds (parrots, canaries, budgerigars, cockatiels, finches, lovebirds)
+                89: "parrot", 88: "macaw", 87: "cockatoo", 90: "magpie", 91: "chickadee", 92: "water_ouzel",
+                93: "bulbul", 94: "jay", 95: "magpie", 96: "chough", 97: "bee_eater", 98: "hornbill",
+                99: "hummingbird", 100: "jacamar", 101: "toucan", 102: "drake", 103: "redshank",
+                # Fish (goldfish, bettas, guppies, tetras, angelfish)
+                1: "goldfish", 2: "great_white_shark", 3: "tiger_shark", 4: "hammerhead", 5: "electric_ray", 6: "stingray",
+                # Reptiles (bearded dragons, leopard geckos, ball pythons, turtles, iguanas)
+                35: "iguana", 36: "chameleon", 37: "agama", 38: "frilled_lizard", 39: "alligator_lizard",
+                40: "gila_monster", 41: "green_lizard", 42: "african_chameleon", 43: "komodo_dragon",
+                44: "african_crocodile", 45: "american_alligator", 46: "triceratops", 47: "thunder_snake",
+                48: "ringneck_snake", 49: "hognose_snake", 50: "green_snake", 51: "king_snake", 52: "garter_snake",
+                53: "water_snake", 54: "vine_snake", 55: "night_snake", 56: "boa_constrictor", 57: "rock_python",
+                58: "indian_cobra", 59: "green_mamba", 60: "sea_snake", 61: "horned_viper", 62: "diamondback",
+                63: "sidewinder", 64: "trilobite", 65: "turtle", 66: "terrapin", 67: "box_turtle",
+                # Other: horses, miniature pigs, chickens, hermit crabs
+                339: "horse", 341: "pig", 7: "cock", 8: "hen", 9: "ostrich", 10: "brambling", 11: "goldfinch",
+                12: "house_finch", 13: "junco", 14: "indigo_bunting", 15: "robin", 16: "bulbul", 17: "jay",
+                18: "magpie", 19: "chickadee", 20: "water_ouzel", 21: "kite", 22: "bald_eagle",
+                # Hermit crab is not in ImageNet, placeholder for future custom model
+                # Add more as needed
+            }
+            # To add more pet types, just add their ImageNet class index and name to the dictionary above.
+            # For example, to add a new pet:
+            # self.animal_classes[999] = "new_pet_name"
             self.imagenet_labels = self._load_imagenet_labels()
-            logger.info("ImageAnalyzer initialized successfully")
-            
+            logger.info("ImageAnalyzer initialized for expanded pet animals")
         except Exception as e:
             logger.error(f"Error initializing ImageAnalyzer: {e}")
             raise
@@ -460,33 +504,6 @@ class ImageAnalyzer:
         except Exception as e:
             logger.warning(f"Could not load ImageNet labels: {e}")
             return {}
-    
-    def _get_animal_classes(self):
-        """Enhanced animal class mappings"""
-        return {
-            # Domestic cats
-            281: "tabby_cat", 282: "tiger_cat", 283: "persian_cat", 284: "siamese_cat", 285: "egyptian_cat",
-            
-            # Wild cats
-            286: "cougar", 287: "lynx", 288: "leopard", 289: "snow_leopard", 290: "jaguar", 
-            291: "lion", 292: "tiger", 293: "cheetah",
-            
-            # Dogs (sample)
-            151: "chihuahua", 207: "golden_retriever", 208: "labrador_retriever", 235: "german_shepherd",
-            
-            # Birds
-            7: "cock", 8: "hen", 9: "ostrich", 22: "bald_eagle", 84: "peacock",
-            
-            # Large mammals
-            340: "indian_elephant", 341: "african_elephant", 343: "giant_panda",
-            294: "brown_bear", 291: "lion", 292: "tiger",
-            
-            # Primates
-            365: "orangutan", 366: "gorilla", 367: "chimpanzee", 368: "gibbon",
-            
-            # Marine life
-            0: "tench", 1: "goldfish", 2: "great_white_shark", 3: "tiger_shark"
-        }
     
     def analyze_image(self, image):
         try:
@@ -632,29 +649,29 @@ def display_installation_guide():
     """, unsafe_allow_html=True)
 
 def main():
-    """Enhanced main function with LLM analysis capabilities"""
+    """Enhanced main function with LLM analysis capabilities for AI Pet Expert System"""
     init_session_state()
     
     # Header
     st.markdown("""
     <div class="main-header">
-        <h1>🐾 AI Animal Expert System</h1>
-        <p>Upload an image to identify animals and get expert analysis</p>
+        <h1>🐾 AI Pet Expert System</h1>
+        <p>Upload an image to identify your pet and get expert pet care analysis</p>
     </div>
     """, unsafe_allow_html=True)
     
     # Main content layout - single column for a cleaner look
-    st.header("📸 Image Upload & Analysis")
+    st.header("📸 Pet Image Upload & Analysis")
     uploaded_file = st.file_uploader(
-        "Choose an animal image",
+        "Choose a pet image",
         type=['png', 'jpg', 'jpeg', 'webp'],
-        help="Upload a clear image of an animal for identification"
+        help="Upload a clear image of a pet (cat or dog) for identification"
     )
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
         st.image(image, caption="Uploaded Image", use_container_width=True)
         st.info(f"**Size:** {image.size[0]} × {image.size[1]} pixels | **Format:** {image.format}")
-        if st.button("🔍 Identify Animal", type="primary"):
+        if st.button("🔍 Identify Pet", type="primary"):
             with st.spinner("🔍 Analyzing image..."):
                 analyzer = load_image_analyzer()
                 if analyzer is None:
@@ -666,28 +683,29 @@ def main():
                     st.session_state.analysis_complete = True
                     st.session_state.chat_history.append({
                         'sender': 'user',
-                        'message': "I uploaded an animal image for identification",
+                        'message': "I uploaded a pet image for identification",
                         'timestamp': datetime.now().strftime('%H:%M')
                     })
                 else:
-                    st.error("No animals detected in image")
+                    st.error("No pet animals detected in image. Please upload a clear image of a cat or dog.")
 
     # Analysis Results Section - Full Width, single column
     if st.session_state.analysis_complete and st.session_state.analysis_results:
         st.markdown("---")
-        st.header("🎯 Analysis Results")
+        st.header("🎯 Pet Identification Results")
         display_results(st.session_state.analysis_results)
-        # Expert Analysis Section
-        if GROQ_API_KEY and GROQ_API_KEY != 'YOUR_GROQ_API_KEY_HERE':
+        # Only allow expert analysis for pet animals
+        primary_animal = st.session_state.analysis_results[0]['animal'] if st.session_state.analysis_results else None
+        if primary_animal:
             st.markdown("---")
-            st.header("🤖 Expert Analysis")
+            st.header("🤖 AI Pet Expert Analysis")
             analysis_options = {
                 'diet': '🍽️ Diet & Nutrition Analysis',
                 'habitat': '🏠 Habitat & Environment Suitability', 
                 'behavior': '🎭 Behavior & Interaction Guide',
                 'health': '❤️ Health & Veterinary Care',
                 'conservation': '🌍 Conservation & Ecological Impact',
-                'pet': '🐕 Pet Suitability Assessment'
+                'pet': '🐕 Pet Expert Guidance'
             }
             selected_analysis = st.selectbox(
                 "Choose analysis type:",
@@ -695,10 +713,9 @@ def main():
                 format_func=lambda x: analysis_options[x]
             )
             user_location = st.text_input("Your location:", placeholder="e.g., California, USA")
-            additional_context = st.text_input("Additional context:", placeholder="e.g., found injured")
-            primary_animal = st.session_state.analysis_results[0]['animal']
+            additional_context = st.text_input("Additional context:", placeholder="e.g., adopted, rescued, etc.")
             animal_display_name = primary_animal.replace('_', ' ').title()
-            if st.button(f"🚀 Get Expert Analysis", type="primary"):
+            if st.button(f"🚀 Get {analysis_options[selected_analysis]}", type="primary"):
                 with st.spinner(f"🤖 Analyzing {animal_display_name}..."):
                     try:
                         result = run_llm_analysis(primary_animal, selected_analysis, user_location, additional_context)
@@ -729,21 +746,19 @@ def main():
                         st.session_state[key] = None if 'results' in key else False
                     st.rerun()
         else:
-            st.info("Set your Groq API key in the code or as an environment variable to enable expert analysis.")
+            st.warning("No pet animal detected. Please upload a clear image of a cat or dog.")
 
     # Feature showcase for first-time users
     if not st.session_state.analysis_complete:
         st.markdown("---")
-        st.header("🌟 Available Analysis Types")
+        st.header("🐕 AI Pet Expert System Features")
         st.markdown("""
-        ### Primary Features
-        - 🍽️ **Diet & Nutrition**: Feeding guides and requirements
-        - 🏠 **Habitat & Environment**: Living conditions and needs
-        - 🎭 **Behavior & Interaction**: Safe handling guidelines
-        ### Additional Insights
-        - ❤️ **Health & Care**: Medical and wellness information
-        - 🌍 **Conservation**: Species status and protection
-        - 🐕 **Pet Suitability**: Companion animal assessment
+        - 🐕 **Pet Expert Guidance**: Get comprehensive advice on pet care, training, health, and more for cats and dogs.
+        - 🍽️ **Diet & Nutrition**: Feeding guides and requirements for your pet.
+        - 🏠 **Habitat & Environment**: Living conditions and needs for pets.
+        - 🎭 **Behavior & Interaction**: Safe handling and training guidelines.
+        - ❤️ **Health & Care**: Medical and wellness information for pets.
+        - 🌍 **Conservation**: Responsible pet ownership and ecological impact.
         """)
 
 if __name__ == "__main__":
