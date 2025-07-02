@@ -1,3 +1,6 @@
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 import os
 import cv2
@@ -15,6 +18,7 @@ import io
 import logging
 from datetime import datetime
 from dotenv import load_dotenv
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
