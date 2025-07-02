@@ -1,6 +1,3 @@
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 import os
 import cv2
@@ -673,7 +670,8 @@ def main():
     )
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        st.image(image, caption="Uploaded Image", use_container_width=True)
+        # Display image with specific size constraints
+        st.image(image, caption="Uploaded Image", width=400, use_container_width=False)
         st.info(f"**Size:** {image.size[0]} × {image.size[1]} pixels | **Format:** {image.format}")
         if st.button("🔍 Identify Pet", type="primary"):
             with st.spinner("🔍 Analyzing image..."):
