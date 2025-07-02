@@ -186,7 +186,7 @@ def init_session_state():
         st.session_state['chat_history'] = []
 
 # Set up Groq API key (from environment variable or hardcoded)
-GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+GROQ_API_KEY = os.getenv('GROQ_API_KEY', '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')
 GROQ_API_BASE = 'https://api.groq.com/openai/v1'
 GROQ_MODEL = 'llama-3.3-70b-versatile'
 
