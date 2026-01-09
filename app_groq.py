@@ -182,8 +182,7 @@ def init_session_state():
     if 'chat_history' not in st.session_state:
         st.session_state['chat_history'] = []
 
-# Set up Groq API key (from environment variable or hardcoded)
-GROQ_API_KEY = os.getenv('GROQ_API_KEY', 'key_here')
+GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 GROQ_API_BASE = 'https://api.groq.com/openai/v1'
 GROQ_MODEL = 'llama-3.3-70b-versatile'
 
